@@ -14,12 +14,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { APPLICATION_API_END_POINT } from "@/utils/constant";
 import axios from "axios";
+import { updateApplicationStatus } from "@/redux/applicationSlice";
 
 const shortlistingStatus = ["Accepted", "Rejected"];
 
 const ApplicantsTable = () => {
   const { applicants } = useSelector((store) => store.application);
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const statusHandler = async (status, id) => {
     // console.log('called');
     try {
@@ -30,7 +31,7 @@ const ApplicantsTable = () => {
       );
       console.log(res);
       if (res.data.success) {
-        // dispatch()
+        dispatch(updateApplicationStatus({ applicationId: id, status }));
         toast.success(res.data.message);
       }
     } catch (error) {
@@ -75,7 +76,10 @@ const ApplicantsTable = () => {
                   )}
                 </TableCell>
                 <TableCell>{item?.applicant.createdAt.split("T")[0]}</TableCell>
-                <TableCell>{item?.status}</TableCell>
+                <TableCell>
+                  {item?.status?.charAt(0).toUpperCase() +
+                    item?.status?.slice(1)}
+                </TableCell>
                 <TableCell className="float-right cursor-pointer">
                   <Popover className="float-right">
                     <PopoverTrigger>
