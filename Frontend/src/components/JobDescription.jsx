@@ -8,6 +8,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { APPLICATION_API_END_POINT, JOB_API_END_POINT } from "@/utils/constant";
 import { toast } from "sonner";
+import useGetJobById from "@/hooks/useGetJobById";
+import useGetCompanyById from "@/hooks/useGetCompanyById";
 
 const JobDescription = () => {
   const [open, setOpen] = useState(false);
@@ -62,7 +64,10 @@ const JobDescription = () => {
     }
     fetchSingleJob();
   }, [])
-
+  // useGetJobById()
+  useGetCompanyById(singleJob?.company)
+  const {singleCompany} = useSelector(store => store.company)
+  // console.log(singleCompany)
   return (
     <div>
       <Navbar />
@@ -98,6 +103,12 @@ const JobDescription = () => {
             Role:
             <span className="pl-4 font-normal text-gray-800">
               {singleJob?.title}
+            </span>
+          </h1>
+          <h1 className="font-bold my-1">
+            Company:
+            <span className="pl-4 font-normal text-gray-800">
+              {singleCompany?.name}
             </span>
           </h1>
           <h1 className="font-bold my-1">

@@ -10,9 +10,9 @@ const HeroSection = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const searchJobHandler = () => {
-    dispatch(setSearchedQuery(query))
-    navigate("/browse")
-  }
+    dispatch(setSearchedQuery(query));
+    navigate("/browse");
+  };
   return (
     <div className="text-center">
       <div className="flex flex-col gap-5 my-10">
@@ -23,17 +23,28 @@ const HeroSection = () => {
           Search, Apply, & <br /> Get your{" "}
           <span className="text-[#6A38C2]">Dream Job</span>
         </h1>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione, eveniet.</p>
-        <div className="flex w-[40%] shadow-lg border border-grey-200 pl-3 rounded-full items-center gap-4 mx-auto h-9">
-            <input type="text"
+        <p>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione,
+          eveniet.
+        </p>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault(); // prevent page reload
+            searchJobHandler();
+          }}
+          className="flex w-[40%] shadow-lg border border-grey-200 pl-3 rounded-full items-center gap-4 mx-auto h-9"
+        >
+          <input
+            type="text"
             placeholder="Find your dream job"
             className="outline-none border-none w-full"
             onChange={(e) => setQuery(e.target.value)}
-            />
-            <Button onClick={() => searchJobHandler()} className='rounded-r-full bg-[#6A38C2]'>
-                <Search className="h-5 w-5"/>
-            </Button>
-        </div>
+          />
+
+          <Button type="submit" className="rounded-r-full bg-[#6A38C2]">
+            <Search className="h-5 w-5" />
+          </Button>
+        </form>
       </div>
     </div>
   );
