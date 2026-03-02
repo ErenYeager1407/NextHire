@@ -24,8 +24,7 @@ const HeroSection = () => {
           <span className="text-[#6A38C2]">Dream Job</span>
         </h1>
         <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione,
-          eveniet.
+          Search, Apply & Get Your Dream Job with NextHire
         </p>
         <form
           onSubmit={(e) => {

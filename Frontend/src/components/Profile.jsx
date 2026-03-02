@@ -12,6 +12,7 @@ import { useSelector } from "react-redux";
 import useGetAppliedJobs from "@/hooks/useGetAppliedJobs";
 import SavedJobTable from "./SavedJobTable";
 import useGetSavedJobs from "@/hooks/useGetSavedJobs";
+import Footer from "./Footer";
 
 const Profile = () => {
   useGetAppliedJobs();
@@ -84,14 +85,17 @@ const Profile = () => {
         </div>
       </div>
       <div className="max-w-4xl mx-auto bg-white rounded-2xl">
-        <h1 className="font-bold text-lg my-4">Applied Jobs</h1>
+        <h1 className="font-bold text-lg my-4 mx-2">Applied Jobs</h1>
         <AppliedJobTable />
       </div>
       <UpdateProfileDialog open={open} setOpen={setOpen} />
       <div className="max-w-4xl mx-auto bg-white rounded-2xl">
-        <h1 className="font-bold text-lg my-4">Saved Jobs</h1>
-        <SavedJobTable/>
+        <h1 className="font-bold text-lg my-4 mx-5">Saved Jobs</h1>
+        <div>
+          <SavedJobTable/>
+        </div>
       </div>
+      <Footer/>
     </div>
   );
 };

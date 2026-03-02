@@ -11,22 +11,27 @@ import {
   USER_API_END_POINT,
 } from "@/utils/constant";
 import { toast } from "sonner";
-import { setSingleJob, setSavedJobs } from "@/redux/jobSlice";
+import { setSingleJob, setSavedJobs, setLoadingJobs } from "@/redux/jobSlice";
 import { setUser } from "@/redux/authSlice";
 import useGetCompanyById from "@/hooks/useGetCompanyById";
+import Spinner from "./shared/Spinner";
+import Footer from "./Footer";
 
 const JobDescription = () => {
   const dispatch = useDispatch();
   const { id: jobId } = useParams();
 
-  const { singleJob, savedJobs } = useSelector((store) => store.job);
+  const { singleJob, savedJobs, loadingJobs } = useSelector(
+    (store) => store.job,
+  );
   const { user } = useSelector((store) => store.auth);
+  // dispatch(setLoadingJobs(true));
 
   /* ================= APPLY STATE ================= */
   const isApplied = useMemo(() => {
     return (
       singleJob?.applications?.some(
-        (application) => application.applicant === user?._id
+        (application) => application.applicant === user?._id,
       ) || false
     );
   }, [singleJob, user]);
@@ -34,7 +39,7 @@ const JobDescription = () => {
   /* ================= SAVE STATE ================= */
   const isSaved = useMemo(() => {
     return savedJobs?.some((job) =>
-      typeof job === "string" ? job === jobId : job._id === jobId
+      typeof job === "string" ? job === jobId : job._id === jobId,
     );
   }, [savedJobs, jobId]);
 
@@ -44,16 +49,13 @@ const JobDescription = () => {
       const res = await axios.post(
         `${APPLICATION_API_END_POINT}/apply/${jobId}`,
         {},
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       if (res.data.success) {
         const updatedJob = {
           ...singleJob,
-          applications: [
-            ...singleJob.applications,
-            { applicant: user._id },
-          ],
+          applications: [...singleJob.applications, { applicant: user._id }],
         };
         dispatch(setSingleJob(updatedJob));
         toast.success(res.data.message);
@@ -70,7 +72,7 @@ const JobDescription = () => {
         const res = await axios.post(
           `${USER_API_END_POINT}/save-job`,
           { jobId },
-          { withCredentials: true }
+          { withCredentials: true },
         );
 
         dispatch(setSavedJobs(res.data.user.saveJobs));
@@ -80,7 +82,7 @@ const JobDescription = () => {
         const res = await axios.post(
           `${USER_API_END_POINT}/remove-saved-job`,
           { jobId },
-          { withCredentials: true }
+          { withCredentials: true },
         );
 
         dispatch(setSavedJobs(res.data.savedJobs));
@@ -96,6 +98,8 @@ const JobDescription = () => {
   useEffect(() => {
     const fetchJob = async () => {
       try {
+        dispatch(setLoadingJobs(true)); // ✅ START loading
+        dispatch(setSingleJob(null));
         const res = await axios.get(`${JOB_API_END_POINT}/get/${jobId}`, {
           withCredentials: true,
         });
@@ -105,6 +109,8 @@ const JobDescription = () => {
         }
       } catch (error) {
         toast.error("Failed to fetch job");
+      } finally {
+        dispatch(setLoadingJobs(false));
       }
     };
     fetchJob();
@@ -113,6 +119,15 @@ const JobDescription = () => {
   /* ================= FETCH COMPANY ================= */
   useGetCompanyById(singleJob?.company);
   const { singleCompany } = useSelector((store) => store.company);
+
+  if (loadingJobs || !singleJob) {
+    return (
+      <div>
+        <Navbar/>
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -170,16 +185,29 @@ const JobDescription = () => {
         </h1>
 
         <div className="my-4 space-y-2">
-          <p><b>Role:</b> {singleJob?.title}</p>
-          <p><b>Company:</b> {singleCompany?.name}</p>
-          <p><b>Location:</b> {singleJob?.location}</p>
-          <p><b>Description:</b> {singleJob?.description}</p>
-          <p><b>Experience:</b> {singleJob?.expirenceLevel} yrs</p>
-          <p><b>Salary:</b> {singleJob?.salary} LPA</p>
-          <p><b>Total Applicants:</b> {singleJob?.applications?.length}</p>
           <p>
-            <b>Posted Date:</b>{" "}
-            {singleJob?.createdAt?.split("T")[0]}
+            <b>Role:</b> {singleJob?.title}
+          </p>
+          <p>
+            <b>Company:</b> {singleCompany?.name}
+          </p>
+          <p>
+            <b>Location:</b> {singleJob?.location}
+          </p>
+          <p>
+            <b>Description:</b> {singleJob?.description}
+          </p>
+          <p>
+            <b>Experience:</b> {singleJob?.expirenceLevel} yrs
+          </p>
+          <p>
+            <b>Salary:</b> {singleJob?.salary} LPA
+          </p>
+          <p>
+            <b>Total Applicants:</b> {singleJob?.applications?.length}
+          </p>
+          <p>
+            <b>Posted Date:</b> {singleJob?.createdAt?.split("T")[0]}
           </p>
         </div>
       </div>
