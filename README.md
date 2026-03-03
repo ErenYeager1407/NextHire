@@ -1,4 +1,4 @@
-# 🚀 NextHire — Job Portal
+# 🚀 NextHire
 
 **NextHire** is a full-stack **MERN** web application that connects job seekers with recruiters. Users can browse, search, filter, apply for, and save jobs, while recruiters can register companies, post job openings, manage applicants, and update application statuses — all through a modern, responsive interface.
 
@@ -100,7 +100,7 @@
 ## 📁 Project Structure
 
 ```
-JobPortal/
+NextHire/
 ├── Backend/
 │   ├── controllers/
 │   │   ├── application.controller.js   # Apply, get applicants, update status
@@ -206,8 +206,8 @@ JobPortal/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/ErenYeager1407/JobPortal.git
-cd JobPortal
+git clone https://github.com/ErenYeager1407/NextHire.git
+cd NextHire
 ```
 
 ### 2. Setup Backend
@@ -408,8 +408,13 @@ All API endpoints are prefixed with `http://localhost:8000/api/v1`.
 
 ## 📸 Screenshots
 
-> _Add screenshots of your application here._
-
+![alt text](image.png)
+![alt text](image-2.png)
+![alt text](image-3.png)
+![alt text](image-4.png)
+![alt text](image-5.png)
+![alt text](image-6.png)
+![alt text](image-7.png)
 ---
 
 ## 👨‍💻 Author
