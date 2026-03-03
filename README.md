@@ -408,13 +408,15 @@ All API endpoints are prefixed with `http://localhost:8000/api/v1`.
 
 ## 📸 Screenshots
 
-![alt text](image.png)
-![alt text](image-2.png)
-![alt text](image-3.png)
-![alt text](image-4.png)
-![alt text](image-5.png)
-![alt text](image-6.png)
-![alt text](image-7.png)
+![Screenshot 1](ReadmeImages/image.png)
+![Screenshot 2](ReadmeImages/image-1.png)
+![Screenshot 3](ReadmeImages/image-2.png)
+![Screenshot 4](ReadmeImages/image-3.png)
+![Screenshot 5](ReadmeImages/image-4.png)
+![Screenshot 6](ReadmeImages/image-5.png)
+![Screenshot 7](ReadmeImages/image-6.png)
+![Screenshot 8](ReadmeImages/image-7.png)
+
 ---
 
 ## 👨‍💻 Author
