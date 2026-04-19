@@ -18,7 +18,7 @@
   app.use(express.urlencoded({ extended: true })); //read form data
   app.use(cookieParser()); //read cookies
   const corsOptions = {
-    origin: ["http://localhost:5173", "https://next-hire-frontend.vercel.app"],
+    origin: ["http://localhost:5173", "https://next-hire-psi.vercel.app"],
     credentials: true, // allow browser to send credentials
   };
   app.use(cors(corsOptions)); //allow frontend and backend communiacations
