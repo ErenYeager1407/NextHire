@@ -39,7 +39,11 @@ const userSchema = new mongoose.Schema({
     saveJobs: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Job'
-    }]
+    }],
+    interviewReports: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'InterviewReport'
+    }],
 
 }, {timestamps: true});
 const User = mongoose.model('User', userSchema)

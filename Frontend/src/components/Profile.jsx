@@ -12,11 +12,14 @@ import { useSelector } from "react-redux";
 import useGetAppliedJobs from "@/hooks/useGetAppliedJobs";
 import SavedJobTable from "./SavedJobTable";
 import useGetSavedJobs from "@/hooks/useGetSavedJobs";
+import useGetInterviewReports from "@/hooks/useGetInterviewReports";
+import InterviewReportTable from "./InterviewReportTable";
 import Footer from "./Footer";
 
 const Profile = () => {
   useGetAppliedJobs();
   useGetSavedJobs();
+  useGetInterviewReports();
   const [open, setOpen] = useState(false);
   const { user } = useSelector((store) => store.auth);
   const isResume = user?.profile?.resume;
@@ -84,6 +87,13 @@ const Profile = () => {
           )}
         </div>
       </div>
+
+      {/* Interview Reports Section */}
+      <div className="max-w-4xl mx-3 sm:mx-auto bg-white rounded-2xl overflow-hidden mb-5">
+        <h1 className="font-bold text-lg my-4 mx-2">Interview Reports</h1>
+        <InterviewReportTable />
+      </div>
+
       <div className="max-w-4xl mx-3 sm:mx-auto bg-white rounded-2xl overflow-hidden">
         <h1 className="font-bold text-lg my-4 mx-2">Applied Jobs</h1>
         <AppliedJobTable />

@@ -14,6 +14,7 @@ import {
 } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import companySlice from "./companySlice";
+import interviewReportSlice from "./interviewReportSlice";
 
 const persistConfig = {
     key: 'root',
@@ -27,7 +28,7 @@ const rootReducer = combineReducers({
     job:jobSlice,
     company: companySlice,
     application: applicationSlice,
-
+    interviewReport: interviewReportSlice,
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

@@ -103,6 +103,7 @@ export const login = async (req, res) => {
       role: user.role,
       profile: user.profile,
       saveJobs: user.saveJobs,
+      interviewReports: user.interviewReports,
     };
 
     return res

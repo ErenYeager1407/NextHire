@@ -1,0 +1,10 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <!-- Briefcase body -->
+  <rect x="2" y="10" width="28" height="20" rx="3" fill="#4F7EF7"/>
+  <!-- Briefcase top notch -->
+  <rect x="10" y="4" width="12" height="8" rx="2" fill="none" stroke="#4F7EF7" stroke-width="2.5"/>
+  <!-- White upward arrow shaft -->
+  <line x1="16" y1="26" x2="16" y2="14" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- White upward arrow head -->
+  <polyline points="11,18 16,13 21,18" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

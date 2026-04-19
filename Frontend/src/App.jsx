@@ -1,6 +1,5 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import './App.css'
-import Navbar from './components/shared/Navbar'
 import Login from './components/auth/Login'
 import Signup from './components/auth/Signup'
 import Home from './components/Home'
@@ -16,6 +15,8 @@ import PostJob from './components/admin/PostJob'
 import Applicants from './components/admin/Applicants'
 import ProtectedRoute from './components/admin/ProtectedRoute'
 import JobSetup from './components/admin/JobSetUp'
+import GenerateInterviewReport from './components/GenerateInterviewReport'
+import InterviewReportView from './components/InterviewReportView'
 
 const appRouter = createBrowserRouter([
   {
@@ -45,6 +46,14 @@ const appRouter = createBrowserRouter([
   {
     path: "/description/:id",
     element: <JobDescription />
+  },
+  {
+    path: "/generate-interview-report/:id",
+    element: <GenerateInterviewReport/>
+  },
+  {
+    path: "/interview-report/:reportId",
+    element: <InterviewReportView/>
   },
   //admin starts here
   {

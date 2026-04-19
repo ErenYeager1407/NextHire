@@ -4,7 +4,7 @@ import { Button } from "./ui/button";
 import Navbar from "./shared/Navbar";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   APPLICATION_API_END_POINT,
   JOB_API_END_POINT,
@@ -19,13 +19,13 @@ import Footer from "./Footer";
 
 const JobDescription = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { id: jobId } = useParams();
 
   const { singleJob, savedJobs, loadingJobs } = useSelector(
     (store) => store.job,
   );
   const { user } = useSelector((store) => store.auth);
-  // dispatch(setLoadingJobs(true));
 
   /* ================= APPLY STATE ================= */
   const isApplied = useMemo(() => {
@@ -94,11 +94,19 @@ const JobDescription = () => {
     }
   };
 
+  /* ================= GENERATE REPORT ================= */
+  const handleGenerateReport = () => {
+    // Always navigate to the generate page and let the server-side
+    // duplicate check decide — it compares jobId + userId + resume URL +
+    // selfDescription, so uploading a new CV correctly triggers a new report.
+    navigate(`/generate-interview-report/${jobId}`);
+  };
+
   /* ================= FETCH JOB ================= */
   useEffect(() => {
     const fetchJob = async () => {
       try {
-        dispatch(setLoadingJobs(true)); // ✅ START loading
+        dispatch(setLoadingJobs(true));
         dispatch(setSingleJob(null));
         const res = await axios.get(`${JOB_API_END_POINT}/get/${jobId}`, {
           withCredentials: true,
@@ -128,6 +136,7 @@ const JobDescription = () => {
       </div>
     );
   }
+
 
   return (
     <div>
@@ -209,6 +218,32 @@ const JobDescription = () => {
           <p>
             <b>Posted Date:</b> {singleJob?.createdAt?.split("T")[0]}
           </p>
+        </div>
+
+        {/* Generate Interview Report – right-aligned icon button */}
+        <div className="flex justify-end mt-6">
+          <button
+            onClick={handleGenerateReport}
+            className="generate-report-btn"
+            aria-label="Generate Interview Report"
+          >
+            {/* Sparkle / AI icon */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12 3v2M12 19v2M4.93 4.93l1.41 1.41M16.24 16.24l1.41 1.41M3 12h2M19 12h2M4.93 19.07l1.41-1.41M16.24 7.76l1.41-1.41" />
+              <circle cx="12" cy="12" r="4" />
+            </svg>
+            <span className="generate-report-tooltip">Generate Interview Report</span>
+          </button>
         </div>
       </div>
     </div>

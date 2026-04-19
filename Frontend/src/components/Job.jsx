@@ -114,14 +114,14 @@ return (
     </div>
 
     {/* BADGES */}
-    <div className="flex items-center gap-2 h-8">
-      <Badge className="text-blue-700 font-bold" variant="ghost">
+    <div className="flex items-center gap-2 flex-wrap min-h-[32px]">
+      <Badge className="text-blue-700 font-bold max-w-[120px] truncate" variant="ghost">
         {job?.position} positions
       </Badge>
-      <Badge className="text-[#F83002] font-bold" variant="ghost">
+      <Badge className="text-[#F83002] font-bold max-w-[120px] truncate" variant="ghost">
         {job?.jobType}
       </Badge>
-      <Badge className="text-[#7209b7] font-bold" variant="ghost">
+      <Badge className="text-[#7209b7] font-bold max-w-[120px] truncate" variant="ghost">
         {job?.salary} LPA
       </Badge>
     </div>
