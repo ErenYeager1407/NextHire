@@ -34,6 +34,8 @@
 - **View applied jobs** with application status tracking (pending / accepted / rejected)
 - **View saved jobs** table on profile
 - **Update profile** — name, email, phone, bio, skills, resume, and profile photo
+- **AI-Powered Interview Preparation** — generate detailed interview reports based on user profile, resume content, and job description (powered by Google Gemini AI with Structured Outputs)
+- **View generated interview reports** — access past interview prep reports (match score, skill gaps, customized technical & behavioral questions, day-wise prep plan) from the user profile
 
 ### 🏢 Recruiter
 
@@ -53,6 +55,7 @@
 - **Toast notifications** — real-time feedback via Sonner
 - **Persistent state** — Redux Persist keeps user session across page refreshes
 - **Category carousel** — quick job search by category on the home page
+- **PDF Resume Parsing** — automatically extract text contents from uploaded PDF resumes for AI analysis
 
 ---
 
@@ -75,6 +78,10 @@
 | **CORS**          | Cross-origin resource sharing      |
 | **dotenv**        | Environment variable management    |
 | **nodemon**       | Development auto-restart           |
+| **@google/genai** | Google Gemini API SDK              |
+| **pdf-parse**     | Raw text extraction from PDF files |
+| **Zod**           | Schema definition & validation     |
+| **zod-to-json-schema** | Convert Zod to JSON schema for Gemini structured outputs |
 
 ### Frontend
 
@@ -103,8 +110,11 @@
 NextHire/
 ├── Backend/
 │   ├── controllers/
+│   │   ├── services/
+│   │   │   └── ai.services.js          # Gemini AI API configurations & schemas
 │   │   ├── application.controller.js   # Apply, get applicants, update status
 │   │   ├── company.controller.js       # Register, get, update companies
+│   │   ├── interview.controller.js     # Generate and retrieve interview reports
 │   │   ├── job.controller.js           # Post, get, update, search jobs
 │   │   └── user.controller.js          # Register, login, logout, profile, saved jobs
 │   ├── middlewares/
@@ -113,9 +123,11 @@ NextHire/
 │   ├── models/
 │   │   ├── application.model.js        # Application schema
 │   │   ├── company.model.js            # Company schema
+│   │   ├── interviewReport.model.js    # AI Interview Report schema
 │   │   ├── job.model.js                # Job schema
 │   │   └── user.model.js               # User schema
 │   ├── routes/
+│   │   ├── ai.route.js                 # /api/v1/ai (Interview prep endpoints)
 │   │   ├── application.route.js        # /api/v1/application
 │   │   ├── company.route.js            # /api/v1/company
 │   │   ├── job.route.js                # /api/v1/job
@@ -123,12 +135,13 @@ NextHire/
 │   ├── utils/
 │   │   ├── cloudinary.js               # Cloudinary configuration
 │   │   ├── daraUri.js                  # DataURI converter
-│   │   └── db.js                       # MongoDB connection
+│   │   ├── db.js                       # MongoDB connection
+│   │   └── pdfParser.js                # PDF-to-text parser for resumes
 │   ├── index.js                        # Express app entry point
 │   ├── package.json
 │   └── .env                            # Environment variables
 │
-├── Frontend/
+│── Frontend/
 │   ├── src/
 │   │   ├── components/
 │   │   │   ├── admin/                  # Recruiter dashboard pages
@@ -154,8 +167,11 @@ NextHire/
 │   │   │   ├── CategoryCarousel.jsx    # Job category carousel
 │   │   │   ├── FilterCard.jsx          # Job filter sidebar
 │   │   │   ├── Footer.jsx              # Site footer
+│   │   │   ├── GenerateInterviewReport.jsx # AI Loading & Report generator screen
 │   │   │   ├── HeroSection.jsx         # Home page hero section
 │   │   │   ├── Home.jsx                # Home page
+│   │   │   ├── InterviewReportTable.jsx # List generated prep reports
+│   │   │   ├── InterviewReportView.jsx # Detailed view of generated report
 │   │   │   ├── Job.jsx                 # Job card component
 │   │   │   ├── JobDescription.jsx      # Job detail page
 │   │   │   ├── Jobs.jsx                # Jobs listing page
@@ -173,12 +189,14 @@ NextHire/
 │   │   │   ├── useGetAppliedJobs.jsx   # Fetch user's applied jobs
 │   │   │   ├── useGetCompanyById.jsx   # Fetch company by ID
 │   │   │   ├── useGetJobById.jsx       # Fetch job by ID
-│   │   │   └── useGetSavedJobs.jsx     # Fetch user's saved jobs
+│   │   │   ├── useGetSavedJobs.jsx     # Fetch user's saved jobs
+│   │   │   └── useGetInterviewReports.jsx # Fetch user's generated reports
 │   │   ├── redux/
 │   │   │   ├── authSlice.js            # Authentication state
 │   │   │   ├── jobSlice.js             # Jobs & search state
 │   │   │   ├── companySlice.js         # Company state
 │   │   │   ├── applicationSlice.js     # Application state
+│   │   │   ├── interviewReportSlice.js # AI interview reports state
 │   │   │   └── store.js                # Redux store with persist
 │   │   ├── utils/
 │   │   │   └── constant.js             # API endpoint constants
@@ -255,6 +273,9 @@ SECRET_KEY=your_jwt_secret_key
 CLOUD_NAME=your_cloudinary_cloud_name
 API_KEY=your_cloudinary_api_key
 API_SECRET=your_cloudinary_api_secret
+
+# Google Gemini AI
+GOOGLE_GENAI_API_KEY=your_google_gemini_api_key
 ```
 
 ---
@@ -303,6 +324,14 @@ All API endpoints are prefixed with `http://localhost:8000/api/v1`.
 | GET    | `/:id/applicants`    | ✅   | Get all applicants for a job |
 | PUT    | `/status/:id/update` | ✅   | Update application status    |
 
+### 🤖 AI Routes — `/api/v1/ai`
+
+| Method | Endpoint                          | Auth | Description                                         |
+| ------ | --------------------------------- | ---- | --------------------------------------------------- |
+| POST   | `/generate-interview-report/:id`  | ✅   | Generate a structured interview prep report for a job |
+| GET    | `/interview-reports`              | ✅   | Get all generated interview reports for the user    |
+| GET    | `/interview-report/:id`           | ✅   | Get details of a specific interview report by ID    |
+
 ---
 
 ## 🗃 Database Models
@@ -323,6 +352,7 @@ All API endpoints are prefixed with `http://localhost:8000/api/v1`.
 | `profile.profilePhoto`       | String     | Cloudinary URL to profile photo     |
 | `profile.company`            | ObjectId   | Reference to Company                |
 | `saveJobs`                   | [ObjectId] | References to saved Job documents   |
+| `interviewReports`           | [ObjectId] | References to InterviewReport documents |
 
 ### Company
 
@@ -359,6 +389,23 @@ All API endpoints are prefixed with `http://localhost:8000/api/v1`.
 | `applicant` | ObjectId | Reference to User (required)         |
 | `status`    | String   | `pending`, `accepted`, or `rejected` |
 
+### InterviewReport
+
+| Field                 | Type       | Description                                                 |
+| --------------------- | ---------- | ----------------------------------------------------------- |
+| `jobId`               | ObjectId   | Reference to the associated Job                             |
+| `jobDescription`      | String     | The copy of the job description used for analysis (required)|
+| `resume`              | String     | URL of the resume PDF used for analysis                     |
+| `selfDescription`     | String     | Text description/skills extracted from User profile         |
+| `overallFeedback`     | String     | AI-generated narrative feedback on profile alignment        |
+| `matchScore`          | Number     | AI-generated percentage (0-100) indicating alignment score |
+| `technicalQuestions`  | [Object]   | Array of objects containing: `question`, `intention`, `answer` |
+| `behavioralQuestions` | [Object]   | Array of objects containing: `question`, `intention`, `answer` |
+| `skillGaps`           | [Object]   | Array of objects containing: `skill`, `severity`            |
+| `preparationPlan`     | [Object]   | Array of objects containing: `day`, `focus`, `tasks` (array of strings) |
+| `userId`              | ObjectId   | Reference to the candidate User                             |
+| `title`               | String     | Copied job title (required)                                 |
+
 ---
 
 ## 🖥 Frontend Architecture
@@ -371,38 +418,42 @@ All API endpoints are prefixed with `http://localhost:8000/api/v1`.
 | `jobSlice`         | `allJobs`, `singleJob`, `savedJobs`, `searchedQuery`, `adminJobs` |
 | `companySlice`     | `companies`, `singleCompany`, `searchCompanyByText`               |
 | `applicationSlice` | `applicants` — applicants for recruiter's jobs                    |
+| `interviewReportSlice` | `interviewReports`, `singleReport`, `loading`                     |
 
 ### Custom Hooks
 
-| Hook                 | Purpose                          |
-| -------------------- | -------------------------------- |
-| `useGetAllJobs`      | Fetch all jobs on page load      |
-| `useGetSearchedJobs` | Fetch jobs matching search query |
-| `useGetAllAdminJobs` | Fetch recruiter's posted jobs    |
-| `useGetAllCompanies` | Fetch recruiter's companies      |
-| `useGetAppliedJobs`  | Fetch user's applied jobs        |
-| `useGetCompanyById`  | Fetch a single company by ID     |
-| `useGetJobById`      | Fetch a single job by ID         |
-| `useGetSavedJobs`    | Fetch user's saved jobs          |
+| Hook                     | Purpose                                                          |
+| ------------------------ | ---------------------------------------------------------------- |
+| `useGetAllJobs`          | Fetch all jobs on page load                                      |
+| `useGetSearchedJobs`     | Fetch jobs matching search query                                 |
+| `useGetAllAdminJobs`     | Fetch recruiter's posted jobs                                    |
+| `useGetAllCompanies`     | Fetch recruiter's companies                                      |
+| `useGetAppliedJobs`      | Fetch user's applied jobs                                        |
+| `useGetCompanyById`      | Fetch a single company by ID                                     |
+| `useGetJobById`          | Fetch a single job by ID                                         |
+| `useGetSavedJobs`        | Fetch user's saved jobs                                          |
+| `useGetInterviewReports` | Fetch all AI interview reports generated by user                 |
 
 ### Routing
 
-| Path                         | Component      | Access    |
-| ---------------------------- | -------------- | --------- |
-| `/`                          | Home           | Public    |
-| `/login`                     | Login          | Public    |
-| `/signup`                    | Signup         | Public    |
-| `/jobs`                      | Jobs           | Public    |
-| `/browse`                    | Browse         | Public    |
-| `/profile`                   | Profile        | Public    |
-| `/description/:id`           | JobDescription | Public    |
-| `/admin/companies`           | Companies      | Recruiter |
-| `/admin/companies/create`    | CompanyCreate  | Recruiter |
-| `/admin/companies/:id`       | CompanySetUp   | Recruiter |
-| `/admin/jobs`                | AdminJobs      | Recruiter |
-| `/admin/jobs/create`         | PostJob        | Recruiter |
-| `/admin/jobs/:id`            | JobSetup       | Recruiter |
-| `/admin/jobs/:id/applicants` | Applicants     | Recruiter |
+| Path                             | Component                | Access    |
+| -------------------------------- | ------------------------ | --------- |
+| `/`                              | Home                     | Public    |
+| `/login`                         | Login                    | Public    |
+| `/signup`                        | Signup                   | Public    |
+| `/jobs`                          | Jobs                     | Public    |
+| `/browse`                        | Browse                   | Public    |
+| `/profile`                       | Profile                  | Public    |
+| `/description/:id`               | JobDescription           | Public    |
+| `/generate-interview-report/:id` | GenerateInterviewReport  | Public    |
+| `/interview-report/:reportId`    | InterviewReportView      | Public    |
+| `/admin/companies`               | Companies                | Recruiter |
+| `/admin/companies/create`        | CompanyCreate            | Recruiter |
+| `/admin/companies/:id`           | CompanySetUp             | Recruiter |
+| `/admin/jobs`                    | AdminJobs                | Recruiter |
+| `/admin/jobs/create`             | PostJob                  | Recruiter |
+| `/admin/jobs/:id`                | JobSetup                 | Recruiter |
+| `/admin/jobs/:id/applicants`     | Applicants               | Recruiter |
 
 ---
 
